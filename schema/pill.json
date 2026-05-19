@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/gonzih/autoflow/schema/pill.json",
+  "title": "Pill",
+  "description": "Schema for an autoflow pill — a packaged agentic workflow",
+  "type": "object",
+  "required": ["id", "name", "version", "description", "inputs", "outputs", "tags", "requirements", "author", "runtime"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "URL-safe unique identifier for the pill (matches the directory name under pills/)",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "examples": ["photo-to-squarespace", "github-pages-image-host"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name shown in listings",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version (MAJOR.MINOR.PATCH)",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "description": {
+      "type": "string",
+      "description": "One-sentence description of what the pill does",
+      "minLength": 10,
+      "maxLength": 200
+    },
+    "inputs": {
+      "type": "array",
+      "description": "List of things the user must provide before running the pill",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "outputs": {
+      "type": "array",
+      "description": "List of artifacts the pill produces",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "tags": {
+      "type": "array",
+      "description": "Lowercase keywords for discovery",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "minItems": 1
+    },
+    "requirements": {
+      "type": "array",
+      "description": "Software or environment requirements the user must have",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "author": {
+      "type": "string",
+      "description": "GitHub username or display name of the pill author"
+    },
+    "runtime": {
+      "type": "string",
+      "description": "The runtime that executes the pill",
+      "enum": ["claude-code"],
+      "default": "claude-code"
+    }
+  }
+}
