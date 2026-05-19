@@ -1,40 +1,58 @@
-# PLAN — autoflow initial structure
+# PLAN — autoflow landing site + HyperFrames demo
 
 ## Task restatement
-Build the foundational structure for **autoflow** — a library of packaged agentic workflows called "pills". Each pill is a self-contained workflow definition that non-technical users can run with Claude Code. Deliver: root README, JSON schema, Pill #001 (photo-to-squarespace, full workflow), Pill #002 (github-pages-image-host, stub), then PR + merge.
+Build a Vite + React + Tailwind CSS v4 landing site for autoflow at the repo root, plus a 45-second HyperFrames demo video (4 scenes showing the photo-to-squarespace pill), then deploy config + PR merge.
 
 ## Approaches considered
 
-### A. Flat file structure (chosen)
-- All pills live in `pills/<id>/` with standardized files (README.md, WORKFLOW.md, pill.json)
-- Root `schema/pill.json` is JSON Schema Draft-07 for validation
-- Simple, git-native, forkable — no build tooling needed
-- Trade-off: no runtime enforcement of schema without a CLI tool (acceptable for v1)
+### A. Site at repo root (chosen)
+- package.json + vite.config.ts at root, `src/` for React components, `public/` for static assets
+- Render command `--output public/autoflow-demo.mp4` works without path adjustments
+- Trade-off: mixes pill docs with site tooling — acceptable since pills are clearly in `pills/`
 
-### B. Monorepo with tooling
-- Add a CLI (`autoflow run <pill>`) that validates + executes pills
-- More powerful but massively overscoped for "initial structure" task
-- Trade-off: complex, time-consuming, not what was asked
+### B. Site in `site/` subdirectory
+- Cleaner separation of concerns
+- Trade-off: render output path would need adjustment to `site/public/autoflow-demo.mp4`; vercel.json needs `rootDirectory: "site"`
 
-### C. YAML-based pill definitions
-- More readable than JSON for humans
-- Trade-off: JSON Schema validation is natively JSON; mixing formats adds friction
+### C. Next.js instead of Vite
+- SSR capabilities, better DX
+- Trade-off: overkill for a static landing page; Tailwind v4 + Vite is explicitly requested
 
-## Chosen approach: A (flat file structure)
-Matches the spec exactly. Pills are pure documentation + metadata — the agent (Claude Code) is the runtime. No tooling needed v1.
+## Chosen approach: A (site at root)
+Matches the render command exactly. Vite will serve `public/` as static assets. The pills/ and schema/ dirs are unaffected.
 
-## Files to create
-- `README.md` — root, explains autoflow, pill concept, how to run, how to contribute
-- `schema/pill.json` — JSON Schema Draft-07 for pill.json files
-- `pills/photo-to-squarespace/README.md`
-- `pills/photo-to-squarespace/WORKFLOW.md`
-- `pills/photo-to-squarespace/pill.json`
-- `pills/github-pages-image-host/README.md` (stub)
+## Files to create/modify
+- `package.json` — Vite + React + TS + Tailwind v4 + types
+- `vite.config.ts`
+- `tsconfig.json`, `tsconfig.node.json`
+- `index.html` — Vite entry point
+- `.gitignore` — node_modules, dist, etc.
+- `src/main.tsx`
+- `src/App.tsx`
+- `src/index.css` — Tailwind v4 + @theme custom colors + Google Fonts
+- `src/components/Hero.tsx`
+- `src/components/HowItWorks.tsx`
+- `src/components/PillsLibrary.tsx`
+- `src/components/DemoSection.tsx`
+- `src/components/Footer.tsx`
+- `hyperframes-demo/index.html` — 45s composition (init via npx hyperframes)
+- `public/autoflow-demo.mp4` — rendered video
+- `vercel.json` — deploy config
 - `PLAN.md` (this file)
 - `TODO.md`
 
+## HyperFrames composition design (45s, 4 scenes)
+- Scene 1 (0–10s): Problem statement — 3 fade-in text lines
+- Scene 2 (10–22s): Drop your inputs — file list (left) + instruction (right)
+- Scene 3 (22–37s): Agent runs — terminal lines staggered + progress bar
+- Scene 4 (37–45s): Output — CSV preview + result text + footer
+
+All clip elements: class="clip" + data-start (absolute) + data-duration + data-track-index
+GSAP: timeline { paused: true }, registered as window.__timelines["autoflow-demo"]
+No Math.random, Date.now, fetch, inline transforms on GSAP elements
+
 ## Risks and unknowns
-- Squarespace CSV v3 column format: use documented columns (Handle, Title, Body, etc.) — will use known spec
-- Florence-2 invocation: Python subprocess call pattern — straightforward, no unknowns
-- GitHub Pages image hosting step: needs gh CLI and a throwaway repo — document clearly
-- Pricing table: provided verbatim in spec, just embed it
+- HyperFrames `--input` flag: may or may not exist; will adjust if needed
+- `--width` / `--height` render flags: undocumented in skill — try and handle errors
+- Google Fonts in Puppeteer: network accessible in draft render; system font fallbacks included
+- Render time: 45s video at draft quality likely 2–3 minutes; plan for it
