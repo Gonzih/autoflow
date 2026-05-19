@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0d0d0d;
+      }
+
+      /* Scene containers — full-screen absolute */
+      .scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1920px;
+        height: 1080px;
+        background: #0d0d0d;
+      }
+
+      /* Inner layout wrappers — NOT clips, always visible when parent clip is shown */
+      .layout-center {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .layout-col {
+        flex-direction: column;
+      }
+      .layout-row {
+        gap: 100px;
+      }
+
+      /* Terminal box — centered via margin auto */
+      .terminal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 980px;
+        height: fit-content;
+        background: #111;
+        border: 1px solid rgba(110, 231, 183, 0.2);
+        border-radius: 16px;
+        padding: 52px;
+        font-family: 'DM Mono', 'Courier New', monospace;
+      }
+
+      /* Progress track */
+      .progress-track {
+        background: rgba(110, 231, 183, 0.12);
+        border-radius: 999px;
+        height: 8px;
+        overflow: hidden;
+        width: 100%;
+        margin-top: 36px;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="45"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!--
+        Track assignment (no overlaps per track):
+        Track 1  : scene1(0-10), scene2(10-22), scene3(22-37), scene4(37-45)
+        Track 2  : s1-line1(1-10), s2-left(10.5-22), s4-csv(37.5-45)
+        Track 3  : s1-line2(4-10), s2-right(14-22), t1(23-37), s4-text(38-45)
+        Track 4  : s1-pill(7-10), f1(11-22), t2(25-37), s4-zero(41-45)
+        Track 5  : f2(11.5-22), t3(27-37), s4-footer(43-45)
+        Track 6  : f3(12-22), t4(29-37)
+        Track 7  : f4(12.5-22), t5(31-37)
+        Track 8  : f5(13-22), t6(33-37)
+        Track 9  : f6(13.5-22), progress-fill(23-37)
+      -->
+
+      <!-- ════════════════════════════════════════════
+           SCENE 1 · The Problem · 0–10s
+      ════════════════════════════════════════════ -->
+      <div
+        id="scene1"
+        class="clip scene"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+      >
+        <div class="layout-center layout-col" style="gap: 0">
+          <p
+            id="s1-line1"
+            class="clip"
+            data-start="1"
+            data-duration="9"
+            data-track-index="2"
+            style="
+              font-family: 'Inter', sans-serif;
+              font-size: 72px;
+              font-weight: 900;
+              color: white;
+              text-align: center;
+              max-width: 1400px;
+              line-height: 1.1;
+              padding: 0 80px;
+            "
+          >
+            You have 120 photos of kids clothing.
+          </p>
+
+          <p
+            id="s1-line2"
+            class="clip"
+            data-start="4"
+            data-duration="6"
+            data-track-index="3"
+            style="
+              font-family: 'Inter', sans-serif;
+              font-size: 52px;
+              font-weight: 400;
+              color: rgba(255, 255, 255, 0.55);
+              text-align: center;
+              max-width: 1200px;
+              margin-top: 40px;
+            "
+          >
+            Listing them manually takes hours.
+          </p>
+
+          <p
+            id="s1-pill"
+            class="clip"
+            data-start="7"
+            data-duration="3"
+            data-track-index="4"
+            style="
+              font-family: 'DM Mono', 'Courier New', monospace;
+              font-size: 34px;
+              color: #6ee7b7;
+              text-align: center;
+              margin-top: 64px;
+            "
+          >
+            There's a pill for that.
+          </p>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           SCENE 2 · Drop your inputs · 10–22s
+      ════════════════════════════════════════════ -->
+      <div
+        id="scene2"
+        class="clip scene"
+        data-start="10"
+        data-duration="12"
+        data-track-index="1"
+      >
+        <div class="layout-center layout-row">
+          <!-- Left panel: file list — track 2 (10.5-22) -->
+          <div
+            id="s2-left"
+            class="clip"
+            data-start="10.5"
+            data-duration="11.5"
+            data-track-index="2"
+            style="display: flex; flex-direction: column; gap: 14px"
+          >
+            <p
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 22px;
+                color: #6ee7b7;
+                margin-bottom: 10px;
+              "
+            >
+              📁 heics/
+            </p>
+            <!-- File lines: tracks 4-9 (staggered, all overlap s2-left on track 2) -->
+            <p
+              id="f1"
+              class="clip"
+              data-start="11"
+              data-duration="11"
+              data-track-index="4"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 26px;
+                color: rgba(255, 255, 255, 0.75);
+              "
+            >
+              ralph lauren polo.jpg
+            </p>
+            <p
+              id="f2"
+              class="clip"
+              data-start="11.5"
+              data-duration="10.5"
+              data-track-index="5"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 26px;
+                color: rgba(255, 255, 255, 0.75);
+              "
+            >
+              ralph lauren polo brand tag.jpg
+            </p>
+            <p
+              id="f3"
+              class="clip"
+              data-start="12"
+              data-duration="10"
+              data-track-index="6"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 26px;
+                color: rgba(255, 255, 255, 0.75);
+              "
+            >
+              zara dress.jpg
+            </p>
+            <p
+              id="f4"
+              class="clip"
+              data-start="12.5"
+              data-duration="9.5"
+              data-track-index="7"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 26px;
+                color: rgba(255, 255, 255, 0.75);
+              "
+            >
+              zara dress fabric tag.jpg
+            </p>
+            <p
+              id="f5"
+              class="clip"
+              data-start="13"
+              data-duration="9"
+              data-track-index="8"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 26px;
+                color: rgba(255, 255, 255, 0.75);
+              "
+            >
+              burberry coat.jpg
+            </p>
+            <p
+              id="f6"
+              class="clip"
+              data-start="13.5"
+              data-duration="8.5"
+              data-track-index="9"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 26px;
+                color: rgba(255, 255, 255, 0.3);
+              "
+            >
+              ...and 115 more
+            </p>
+          </div>
+
+          <!-- Right panel: instruction — track 3 (14-22) -->
+          <div
+            id="s2-right"
+            class="clip"
+            data-start="14"
+            data-duration="8"
+            data-track-index="3"
+            style="max-width: 580px"
+          >
+            <p
+              style="
+                font-family: 'Space Grotesk', sans-serif;
+                font-size: 66px;
+                font-weight: 700;
+                color: white;
+                line-height: 1.1;
+              "
+            >
+              Drop your photos.<br />Name them.
+            </p>
+            <p
+              style="
+                font-family: 'Inter', sans-serif;
+                font-size: 28px;
+                color: rgba(255, 255, 255, 0.4);
+                margin-top: 28px;
+              "
+            >
+              That's your only job.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           SCENE 3 · Agent runs · 22–37s
+      ════════════════════════════════════════════ -->
+      <div
+        id="scene3"
+        class="clip scene"
+        data-start="22"
+        data-duration="15"
+        data-track-index="1"
+      >
+        <!-- Terminal box: not a clip — always visible when scene3 is shown -->
+        <div class="terminal">
+          <p
+            style="
+              font-size: 15px;
+              color: rgba(110, 231, 183, 0.4);
+              margin-bottom: 36px;
+              letter-spacing: 0.04em;
+            "
+          >
+            autoflow · photo-to-squarespace · running
+          </p>
+
+          <!-- Terminal lines: tracks 3-8, staggered starts -->
+          <p
+            id="t1"
+            class="clip"
+            data-start="23"
+            data-duration="14"
+            data-track-index="3"
+            style="font-size: 28px; color: #6ee7b7; margin-bottom: 20px"
+          >
+            → Converting 120 HEICs...
+          </p>
+          <p
+            id="t2"
+            class="clip"
+            data-start="25"
+            data-duration="12"
+            data-track-index="4"
+            style="font-size: 28px; color: #6ee7b7; margin-bottom: 20px"
+          >
+            → Clustering by item name...
+          </p>
+          <p
+            id="t3"
+            class="clip"
+            data-start="27"
+            data-duration="10"
+            data-track-index="5"
+            style="font-size: 28px; color: #6ee7b7; margin-bottom: 20px"
+          >
+            → Running Florence-2 vision...
+          </p>
+          <p
+            id="t4"
+            class="clip"
+            data-start="29"
+            data-duration="8"
+            data-track-index="6"
+            style="font-size: 28px; color: #6ee7b7; margin-bottom: 20px"
+          >
+            → Generating product listings...
+          </p>
+          <p
+            id="t5"
+            class="clip"
+            data-start="31"
+            data-duration="6"
+            data-track-index="7"
+            style="font-size: 28px; color: #6ee7b7; margin-bottom: 20px"
+          >
+            → Hosting images on GitHub Pages...
+          </p>
+          <p
+            id="t6"
+            class="clip"
+            data-start="33"
+            data-duration="4"
+            data-track-index="8"
+            style="
+              font-size: 28px;
+              color: white;
+              font-weight: 700;
+              margin-bottom: 32px;
+            "
+          >
+            → CSV ready. 47 products.
+          </p>
+
+          <!-- Progress track — not a clip -->
+          <div class="progress-track">
+            <!-- Progress fill — track 9 (23-37), no overlap with f6(13.5-22) -->
+            <div
+              id="progress-fill"
+              class="clip"
+              data-start="23"
+              data-duration="14"
+              data-track-index="9"
+              style="
+                height: 100%;
+                background: #6ee7b7;
+                border-radius: 999px;
+                width: 0%;
+              "
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════
+           SCENE 4 · The output · 37–45s
+      ════════════════════════════════════════════ -->
+      <div
+        id="scene4"
+        class="clip scene"
+        data-start="37"
+        data-duration="8"
+        data-track-index="1"
+      >
+        <div class="layout-center layout-row">
+          <!-- Left: CSV preview — track 2 (37.5-45) -->
+          <div
+            id="s4-csv"
+            class="clip"
+            data-start="37.5"
+            data-duration="7.5"
+            data-track-index="2"
+            style="
+              background: #111;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              border-radius: 16px;
+              padding: 40px;
+              font-family: 'DM Mono', 'Courier New', monospace;
+              font-size: 18px;
+              width: 640px;
+            "
+          >
+            <p
+              style="
+                color: #6ee7b7;
+                margin-bottom: 18px;
+                font-size: 15px;
+                letter-spacing: 0.05em;
+              "
+            >
+              products.csv
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 12px">
+              Handle,Title,Body,Price,Image URL
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.35); margin-bottom: 10px">
+              ralph-lauren-polo,Ralph Lauren Polo...
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.35); margin-bottom: 10px">
+              zara-floral-dress,Zara Floral Dress...
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.35); margin-bottom: 10px">
+              burberry-trench,Burberry Trench Coat...
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.2)">... 44 more rows</p>
+          </div>
+
+          <!-- Right: result text — track 3 (38-45) -->
+          <div
+            id="s4-text"
+            class="clip"
+            data-start="38"
+            data-duration="7"
+            data-track-index="3"
+            style="max-width: 540px"
+          >
+            <p
+              style="
+                font-family: 'Space Grotesk', sans-serif;
+                font-size: 84px;
+                font-weight: 900;
+                color: white;
+                line-height: 1;
+              "
+            >
+              47 products.
+            </p>
+            <p
+              style="
+                font-family: 'Space Grotesk', sans-serif;
+                font-size: 52px;
+                font-weight: 700;
+                color: #6ee7b7;
+                margin-top: 16px;
+              "
+            >
+              Ready to import.
+            </p>
+
+            <!-- s4-zero: track 4 (41-45) — no overlap with t2(25-37) or f1(11-22) -->
+            <p
+              id="s4-zero"
+              class="clip"
+              data-start="41"
+              data-duration="4"
+              data-track-index="4"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 30px;
+                color: rgba(255, 255, 255, 0.45);
+                margin-top: 52px;
+              "
+            >
+              Zero code.
+            </p>
+
+            <!-- s4-footer: track 5 (43-45) — no overlap with t3(27-37) or f2(11.5-22) -->
+            <p
+              id="s4-footer"
+              class="clip"
+              data-start="43"
+              data-duration="2"
+              data-track-index="5"
+              style="
+                font-family: 'DM Mono', 'Courier New', monospace;
+                font-size: 17px;
+                color: rgba(110, 231, 183, 0.5);
+                letter-spacing: 0.1em;
+                margin-top: 28px;
+              "
+            >
+              autoflow · Pills for humans
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // ── Scene 1: The Problem (0–10s) ───────────────────────
+      tl.fromTo('#scene1', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 0);
+      tl.fromTo('#s1-line1', { opacity: 0 }, { opacity: 1, duration: 0.9 }, 1);
+      tl.fromTo('#s1-line2', { opacity: 0 }, { opacity: 1, duration: 0.8 }, 4);
+      tl.fromTo('#s1-pill', { opacity: 0 }, { opacity: 1, duration: 0.6 }, 7);
+
+      // ── Scene 2: Drop your inputs (10–22s) ─────────────────
+      tl.fromTo('#scene2', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 10);
+      tl.fromTo('#s2-left', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 10.5);
+      tl.fromTo('#f1', { opacity: 0 }, { opacity: 1, duration: 0.35 }, 11);
+      tl.fromTo('#f2', { opacity: 0 }, { opacity: 1, duration: 0.35 }, 11.5);
+      tl.fromTo('#f3', { opacity: 0 }, { opacity: 1, duration: 0.35 }, 12);
+      tl.fromTo('#f4', { opacity: 0 }, { opacity: 1, duration: 0.35 }, 12.5);
+      tl.fromTo('#f5', { opacity: 0 }, { opacity: 1, duration: 0.35 }, 13);
+      tl.fromTo('#f6', { opacity: 0 }, { opacity: 1, duration: 0.35 }, 13.5);
+      tl.fromTo('#s2-right', { opacity: 0 }, { opacity: 1, duration: 0.8 }, 14);
+
+      // ── Scene 3: Agent runs (22–37s) ───────────────────────
+      tl.fromTo('#scene3', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 22);
+      tl.fromTo('#t1', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 23);
+      tl.fromTo('#t2', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 25);
+      tl.fromTo('#t3', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 27);
+      tl.fromTo('#t4', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 29);
+      tl.fromTo('#t5', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 31);
+      tl.fromTo('#t6', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 33);
+      tl.fromTo(
+        '#progress-fill',
+        { width: '0%' },
+        { width: '100%', duration: 14, ease: 'linear' },
+        23
+      );
+
+      // ── Scene 4: The output (37–45s) ───────────────────────
+      tl.fromTo('#scene4', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 37);
+      tl.fromTo('#s4-csv', { opacity: 0 }, { opacity: 1, duration: 0.7 }, 37.5);
+      tl.fromTo('#s4-text', { opacity: 0 }, { opacity: 1, duration: 0.7 }, 38);
+      tl.fromTo('#s4-zero', { opacity: 0 }, { opacity: 1, duration: 0.6 }, 41);
+      tl.fromTo('#s4-footer', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 43);
+
+      window.__timelines['main'] = tl;
+    </script>
+  </body>
+</html>
