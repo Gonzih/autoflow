@@ -1,0 +1,12 @@
+{
+  "id": "photo-to-squarespace",
+  "name": "Photo → Squarespace Product Listings",
+  "version": "1.0.0",
+  "description": "Convert photos of pre-owned clothing into Squarespace-ready product listings with hosted images",
+  "inputs": ["folder of HEIC/JPG photos, named descriptively"],
+  "outputs": ["squarespace/products.csv", "hosted image URLs on GitHub Pages"],
+  "tags": ["ecommerce", "photos", "squarespace", "clothing", "resale"],
+  "requirements": ["macOS", "Python 3", "Florence-2", "gh CLI"],
+  "author": "gonzih",
+  "runtime": "claude-code"
+}
